@@ -9,10 +9,10 @@ import { Config } from './types/Config';
 import { getConfig } from './utils';
 
 import { 
-	COMPONENT_FILE_TEMPLATE, 
-	MODULE_FILE_TEMPLATE, 
-	SPEC_FILE_TEMPLATE 
-} from './constants/templates';
+	getComponentFileTemplate, 
+	getCssModuleFileTemplate, 
+	getTestingLibraryTemplate 
+} from './templates/templates';
 
 /**
  * Responds to a context click on a file with extension .{js|ts|jsx|tsx}
@@ -62,16 +62,16 @@ export async function createComponentGroupFromContext(uri: vscode.Uri) {
 		createComponentDirectory(directory);
 
 		const componentFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.${config.componentFile.extension}`);
-		createFile(componentFile, COMPONENT_FILE_TEMPLATE);
+		createFile(componentFile, getComponentFileTemplate(name));
 
 		if (config.componentGeneration.includeTestFile) {
 			const testFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.${config.testFile.suffix}.${config.testFile.extension}`);
-			createFile(testFile, SPEC_FILE_TEMPLATE);
+			createFile(testFile, getTestingLibraryTemplate(name));
 		}
 		
 		if (config.componentGeneration.includeCssModule) {
 			const moduleFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.module.css`);
-			createFile(moduleFile, MODULE_FILE_TEMPLATE);
+			createFile(moduleFile, getCssModuleFileTemplate());
 		}
 	}
 }
@@ -83,12 +83,40 @@ export async function createComponentGroupFromContext(uri: vscode.Uri) {
  */
 async function createTestFile(uri: vscode.Uri) {
 	const filePath: ParsedPath = path.posix.parse(uri.path);
-	const { dir, name } = filePath;
+	const { dir, name, ext } = filePath;
+
+	if (name.match(/test|spec/)){
+		vscode.window.showWarningMessage(`Warning: ${name}${ext} is already a test file. Will not recreate`);
+		return;
+	}
 
 	const config: Config = getConfig();
 	const spec: vscode.Uri = vscode.Uri.file(`${dir}/${name}.${config.testFile.suffix}.${config.testFile.extension}`);
 	
-	createFile(spec, SPEC_FILE_TEMPLATE);
+    const openEditor = vscode.window.visibleTextEditors
+		.filter(editor => editor?.document?.uri === uri)[0];
+	
+	let sourceCode;
+	
+	if (openEditor) {
+		sourceCode = openEditor.document.getText();
+	} else {
+		const doc: vscode.TextDocument = await vscode.workspace.openTextDocument(uri);
+		sourceCode = doc.getText();	
+	}
+
+	let component;
+	const sourceCodeLines = sourceCode.split('\n');
+	const regex = /^export\sdefault\s(\w+\s)?(?<component>\w+)/;
+
+	for (const line of sourceCodeLines) {
+		const match = line.match(regex);
+		if (match?.groups?.component) {
+			component = match.groups.component;
+		}
+	}
+
+	createFile(spec, getTestingLibraryTemplate(component));
 }
 
 /**
@@ -112,11 +140,18 @@ async function createComponentDirectory(uri: vscode.Uri) {
  * @param template {@link string} the template for the component
  */
 async function createFile(uri: vscode.Uri, template: string) {
+	if (fs.existsSync(uri.fsPath)){
+		const { name, ext } = path.posix.parse(uri.path);
+		vscode.window.showWarningMessage(`Warning: ${name}${ext} already exists. Will not recreate`);
+		return;
+	}
+	
 	const wsedit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
 	
 	wsedit.createFile(uri, { ignoreIfExists: true });
 	wsedit.set(uri, [vscode.TextEdit.insert(new vscode.Position(0, 0),template)]);
 	
 	await vscode.workspace.applyEdit(wsedit);
-	vscode.workspace.openTextDocument(uri).then(doc => vscode.window.showTextDocument(doc));
+	vscode.workspace.openTextDocument(uri)
+		.then(doc => vscode.window.showTextDocument(doc));
 }

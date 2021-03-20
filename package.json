@@ -42,6 +42,29 @@
     "configuration": {
       "title": "VSReact Generator",
       "properties": {
+        "vscode-react-generator.componentFile.extension": {
+          "type": "string",
+          "enum": [
+            "tsx",
+            "jsx"
+          ],
+          "default": "jsx",
+          "description": "Specifies the file extension which will be used when creating React Components",
+          "enumDescriptions": [
+            "Create React Component using typescript with a .tsx file extension",
+            "Create React Components using JSX with a .jsx file extension"
+          ]
+        },
+        "vscode-react-generator.componentGeneration.includeCssModule": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include a CSS module file when generating a Component"
+        },
+        "vscode-react-generator.componentGeneration.includeTestFile": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include a test file when generating a Component"
+        },
         "vscode-react-generator.testFile.suffix": {
           "type": "string",
           "enum": [
@@ -49,39 +72,28 @@
             "test"
           ],
           "default": "spec",
-          "description": "Specifies the suffix which will be used when creating React Test files."
+          "description": "Specifies the suffix which will be used when creating React test files",
+          "enumDescriptions": [
+            "Create test files with a 'spec' suffix",
+            "Create test files with a 'test' suffix"
+          ]
         },
         "vscode-react-generator.testFile.extension": {
           "type": "string",
           "enum": [
-            "js",
+            "tsx",
             "ts",
             "jsx",
-            "tsx"
+            "js"
           ],
-          "default": "js",
-          "description": "Specifies the file extension which will be used when creating React Test files."
-        },
-        "vscode-react-generator.componentFile.extension": {
-          "type": "string",
-          "enum": [
-            "js",
-            "ts",
-            "jsx",
-            "tsx"
-          ],
-          "default": "js",
-          "description": "Specifies the file extension which will be used when creating React Component files."
-        },
-        "vscode-react-generator.componentGeneration.includeCssModule": {
-          "type": "boolean",
-          "default": true,
-          "description": "Specifies whether to include a CSS module file when generating a Component"
-        },
-        "vscode-react-generator.componentGeneration.includeTestFile": {
-          "type": "boolean",
-          "default": true,
-          "description": "Specifies whether to include a test file when generating a Component"
+          "default": "tsx",
+          "description": "Specifies the file extension which will be used when creating React test files",
+          "enumDescriptions": [
+            "Create test files using typescript with a .tsx file extension",
+            "Create test files using typescript with a .ts file extension",
+            "Create test files using JSX with a .jsx file extension",
+            "Create test files using javascript with a .js file extension"
+          ]
         }
       }
     },
@@ -89,6 +101,7 @@
       "commandPalette": [
         {
           "command": "vscode-react-generator.createTestFileFromContext",
+          "group": "1_modification",
           "when": "false"
         },
         {
@@ -97,19 +110,19 @@
         },
         {
           "command": "vscode-react-generator.createComponentGroupFromContext",
-          "group": "CreateTestFile",
+          "group": "1_modification",
           "when": "false"
         }
       ],
       "explorer/context": [
         {
           "command": "vscode-react-generator.createTestFileFromContext",
-          "group": "CreateTestFile",
+          "group": "1_modification",
           "when": "resourceScheme == file && resourceExtname =~ /(\\.js|\\.ts|\\.jsx|\\.tsx)$/"
         },
         {
           "command": "vscode-react-generator.createComponentGroupFromContext",
-          "group": "CreateTestFile",
+          "group": "1_modification",
           "when": "explorerResourceIsFolder"
         }
       ]
