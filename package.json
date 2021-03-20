@@ -10,7 +10,7 @@
   "publisher": "mshirlaw",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mshirlaw/vscode-vscode-react-generator"
+    "url": "https://github.com/mshirlaw/vscode-react-generator.git"
   },
   "engines": {
     "vscode": "^1.54.0"
@@ -42,26 +42,33 @@
     "configuration": {
       "title": "VSReact Generator",
       "properties": {
-        "vscode-react-generator.testFileSuffix": {
-          "type": [
-            "string",
-            "null"
+        "vscode-react-generator.testFile.suffix": {
+          "type": "string",
+          "enum": [
+            "spec",
+            "test"
           ],
           "default": "spec",
           "description": "Specifies the suffix which will be used when creating React Test files."
         },
-        "vscode-react-generator.testFileExtension": {
-          "type": [
-            "string",
-            "null"
+        "vscode-react-generator.testFile.extension": {
+          "type": "string",
+          "enum": [
+            "js",
+            "ts",
+            "jsx",
+            "tsx"
           ],
           "default": "js",
           "description": "Specifies the file extension which will be used when creating React Test files."
         },
-        "vscode-react-generator.componentFileExtension": {
-          "type": [
-            "string",
-            "null"
+        "vscode-react-generator.componentFile.extension": {
+          "type": "string",
+          "enum": [
+            "js",
+            "ts",
+            "jsx",
+            "tsx"
           ],
           "default": "js",
           "description": "Specifies the file extension which will be used when creating React Component files."
