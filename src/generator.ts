@@ -1,9 +1,18 @@
-import * as vscode from 'vscode';
+import * as fs from 'fs';
 import * as path from 'path';
-import { SPEC_FILE_TEMPLATE } from './constants/templates';
-import { Config } from './types/Config';
+
+import * as vscode from 'vscode';
+import { window } from 'vscode';
 import { ParsedPath } from 'node:path';
+
+import { Config } from './types/Config';
 import { getConfig } from './utils';
+
+import { 
+	COMPONENT_FILE_TEMPLATE, 
+	MODULE_FILE_TEMPLATE, 
+	SPEC_FILE_TEMPLATE 
+} from './constants/templates';
 
 /**
  * Responds to a context click on a file with extension .{js|ts|jsx|tsx}
@@ -36,8 +45,35 @@ export async function createTestFileFromCommandPalette() {
  * @param uri {@link vscode.Uri} the uri for the resource which was clicked
  */
 export async function createComponentGroupFromContext(uri: vscode.Uri) {
-	const config: Config = getConfig();
-	console.log('createComponentGroupFromContext was called');
+	if (!uri) {
+		return;
+	}
+
+	const options: vscode.InputBoxOptions = { prompt: 'Enter Component name' };
+	window.showInputBox(options).then(handleSuccess);
+
+	function handleSuccess(name: string | undefined) {
+		if (!name) {
+			return;
+		}
+		const config: Config = getConfig();
+
+		const directory: vscode.Uri = vscode.Uri.file(`${uri.fsPath}/${name}`);
+		createComponentDirectory(directory);
+
+		const componentFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.${config.componentFile.extension}`);
+		createFile(componentFile, COMPONENT_FILE_TEMPLATE);
+
+		if (config.componentGeneration.includeTestFile) {
+			const testFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.${config.testFile.suffix}.${config.testFile.extension}`);
+			createFile(testFile, SPEC_FILE_TEMPLATE);
+		}
+		
+		if (config.componentGeneration.includeCssModule) {
+			const moduleFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.module.css`);
+			createFile(moduleFile, MODULE_FILE_TEMPLATE);
+		}
+	}
 }
 
 /**
@@ -52,14 +88,35 @@ async function createTestFile(uri: vscode.Uri) {
 	const config: Config = getConfig();
 	const spec: vscode.Uri = vscode.Uri.file(`${dir}/${name}.${config.testFile.suffix}.${config.testFile.extension}`);
 	
-	// if the file exists open it
-	
-	// if the file doesn't exist then create it
+	createFile(spec, SPEC_FILE_TEMPLATE);
+}
 
+/**
+ * Create a directory for the component group
+ * 
+ * @param uri {@link vscode.Uri} the uri for the relevant resource
+ */
+async function createComponentDirectory(uri: vscode.Uri) {
+	const { mkdir } = fs.promises;
+	try {
+		await mkdir(uri.path);
+	} catch (e) {
+		console.error(e);
+	}
+}
+
+/**
+ * Create a file from a template
+ * 
+ * @param uri {@link vscode.Uri} the uri for the relevant resource
+ * @param template {@link string} the template for the component
+ */
+async function createFile(uri: vscode.Uri, template: string) {
 	const wsedit: vscode.WorkspaceEdit = new vscode.WorkspaceEdit();
-	wsedit.createFile(spec, { ignoreIfExists: true });
-	wsedit.set(spec, [vscode.TextEdit.insert(new vscode.Position(0, 0), SPEC_FILE_TEMPLATE)]);
+	
+	wsedit.createFile(uri, { ignoreIfExists: true });
+	wsedit.set(uri, [vscode.TextEdit.insert(new vscode.Position(0, 0),template)]);
 	
 	await vscode.workspace.applyEdit(wsedit);
-	vscode.workspace.openTextDocument(spec).then(doc => vscode.window.showTextDocument(doc));
+	vscode.workspace.openTextDocument(uri).then(doc => vscode.window.showTextDocument(doc));
 }

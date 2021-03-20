@@ -11,7 +11,8 @@ export function getConfig(): Config {
 	const config: WorkspaceConfiguration = vscode.workspace.getConfiguration('vscode-react-generator');
     const { 
         testFile = { extension: 'js', suffix: 'spec' }, 
-        componentFile = { extension: 'js' } 
+        componentFile = { extension: 'js' },
+        componentGeneration = { includeCssModule: true, includeTestFile: true },
     } = config;
-    return { testFile, componentFile } as Config;
+    return { testFile, componentFile, componentGeneration } as Config;
 }
