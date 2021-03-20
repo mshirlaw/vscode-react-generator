@@ -1,0 +1,17 @@
+import * as vscode from 'vscode';
+import { WorkspaceConfiguration } from 'vscode';
+import { Config } from './types/Config';
+
+/**
+ * Retrieves config from workspace and applies default values
+ * 
+ * @returns {@link Config} the config object
+ */
+export function getConfig(): Config {
+	const config: WorkspaceConfiguration = vscode.workspace.getConfiguration('vscode-react-generator');
+    const { 
+        testFile = { extension: 'js', suffix: 'spec' }, 
+        componentFile = { extension: 'js' } 
+    } = config;
+    return { testFile, componentFile } as Config;
+}
