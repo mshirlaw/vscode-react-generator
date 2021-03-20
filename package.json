@@ -28,15 +28,15 @@
     "commands": [
       {
         "command": "vscode-react-generator.createTestFileFromContext",
-        "title": "VSReact Generator: Create Test File"
+        "title": "VSReact Generator: Create Test"
       },
       {
         "command": "vscode-react-generator.createTestFileFromCommandPalette",
-        "title": "VSReact Generator: Create Test File"
+        "title": "VSReact Generator: Create Test"
       },
       {
         "command": "vscode-react-generator.createComponentGroupFromContext",
-        "title": "VSReact Generator: Create Component Group"
+        "title": "VSReact Generator: Create Component"
       }
     ],
     "configuration": {
@@ -72,6 +72,16 @@
           ],
           "default": "js",
           "description": "Specifies the file extension which will be used when creating React Component files."
+        },
+        "vscode-react-generator.componentGeneration.includeCssModule": {
+          "type": "boolean",
+          "default": true,
+          "description": "Specifies whether to include a CSS module file when generating a Component"
+        },
+        "vscode-react-generator.componentGeneration.includeTestFile": {
+          "type": "boolean",
+          "default": true,
+          "description": "Specifies whether to include a test file when generating a Component"
         }
       }
     },

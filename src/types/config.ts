@@ -13,9 +13,18 @@
 }
 
 /**
+ * Interface for {@link ComponentGenerationConfig}
+ */
+declare interface ComponentGenerationConfig {
+    includeCssModule: boolean;
+    includeTestFile: boolean;
+}
+
+/**
  * Interface for application {@link Config}
  */
 export declare interface Config {
     componentFile: FileConfig;
+    componentGeneration: ComponentGenerationConfig;
     testFile: TestFileConfig;
 }
