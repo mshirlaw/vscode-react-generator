@@ -12,17 +12,17 @@ The first use case (shown below) is when you have to create a new React Componen
 
 With VSReact you can do all of this quickly by using a handy context menu item
 
-<img src="images/create-component.gif" width="800" height="600"/>
+![Create Component](images/create-component.gif)
 
 Another common use case when developing a React application is the need to generate a test file for an existing Component.
 
 This can also be done easily from the context menu
 
-<img src="images/create-test-context.gif" width="800" height="600"/>
+![Create Test Context](images/create-test-context.gif)
 
 Or from the Command Palette if you already have the Component file open
 
-<img src="images/create-test.gif" width="800" height="600"/>
+![Create Test](images/create-test.gif)
 
 ## Extension Settings
 
@@ -58,7 +58,7 @@ Specifies the file extension which will be used when creating React test files
 
 ## Configuration Options
 
-<img src="images/configuration.png" width="800" height="517"/>
+![Configuration Options](images/configuration.png)
 
 ## Known Issues
 
