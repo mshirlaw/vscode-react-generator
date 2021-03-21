@@ -1,71 +1,71 @@
-# vscode-react-generator README
+# VSReact Generator
 
-This is the README for your extension "vscode-react-generator". After writing up a brief description, we recommend including the following sections.
+VSReact Generator is a tool which gives you some handy shortcuts that can help streamline your workflow when building React applications.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Creating a new Component or a test file for an existing Component is very common when building a React application.
 
-For example if there is an image subfolder under your extension project workspace:
+VSReact streamlines this process by autogenerating files for you to speed up your development.
 
-\!\[feature X\]\(images/feature-x.png\)
+The first use case (shown below) is when you have to create a new React Component from scratch. Every time you build a new React Component you also often have to build a folder, a Component file, a test file and often a CSS midule file.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+With VSReact you can do all of this quickly by using a handy context menu item
 
-## Requirements
+<img src="images/create-component.gif" width="809" height="456"/>
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+Another common use case when developing a React application is the need to generate a test file for an existing Component.
+
+This can also be done easily from the context menu
+
+<img src="images/create-test-context.gif" width="810" height="460"/>
+
+Or from the Command Palette if you already have the Component file open
+
+<img src="images/create-test.gif" width="809" height="446"/>
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-- `myExtension.enable`: enable/disable this extension
-- `myExtension.thing`: set to `blah` to do something
+- `vscode-react-generator.componentFile.extension`
+
+Specifies the file extension which will be used when creating React Components.
+
+When creating a Component you can choose to create it using typescript with a .tsx file extension or using JSX with a .jsx file extension.
+
+- `vscode-react-generator.componentGeneration.includeCssModule`
+
+Include a CSS module file when generating a Component.
+
+When creating a Component this flag can be set to determine whether or not to also create a CSS module file along side your Component file. CSS module files are currently named `ComponentName.module.css` and are created with an empty template.
+
+- `vscode-react-generator.componentGeneration.includeTestFile`
+
+Include a test file when generating a Component.
+
+When creating a Component this flag can be set to determine whether or not to also create an accompanying test file. Test files will be named using the following pattern `ComponentName.[spec|test].[ts|js|tsx|jsx]` depending on the following two additional flags.
+
+Test files are currently created with a simple Jest / React Testing Library template.
+
+- `vscode-react-generator.testFile.suffix`
+
+Specifies the suffix which will be used when creating React test files
+
+- `vscode-react-generator.testFile.extension`
+
+Specifies the file extension which will be used when creating React test files
+
+## Configuration Options
+
+<img src="images/configuration.png" width="800" height="517"/>
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+N/A
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-- Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-- Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release
