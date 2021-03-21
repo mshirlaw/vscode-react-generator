@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { WorkspaceConfiguration } from 'vscode';
-import { Config } from './types/Config';
+import { Config } from './types/config';
 
 /**
  * Retrieves config from workspace and applies default values
