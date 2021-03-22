@@ -1,5 +1,7 @@
 # VSReact Generator
 
+![Build Status](https://img.shields.io/github/workflow/status/mshirlaw/vscode-react-generator/integration/master)
+
 VSReact Generator is a tool which gives you some handy shortcuts that can help streamline your workflow when building React applications.
 
 ## Features
