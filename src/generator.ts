@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import { window } from 'vscode';
 import { ParsedPath } from 'node:path';
 
-import { Config } from './types/Config';
+import { Config } from './types/config';
 import { getConfig } from './utils';
 
 import { 
