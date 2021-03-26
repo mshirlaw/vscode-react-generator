@@ -6,7 +6,7 @@ import { window } from 'vscode';
 import { ParsedPath } from 'node:path';
 
 import { Config } from './types/config';
-import { getConfig } from './utils';
+import { getConfigWithDefaults } from './utils';
 
 import { 
 	getComponentFileTemplate, 
@@ -56,7 +56,7 @@ export async function createComponentGroupFromContext(uri: vscode.Uri) {
 		if (!name) {
 			return;
 		}
-		const config: Config = getConfig();
+		const config: Config = getConfigWithDefaults();
 
 		const directory: vscode.Uri = vscode.Uri.file(`${uri.fsPath}/${name}`);
 		createComponentDirectory(directory);
@@ -64,14 +64,14 @@ export async function createComponentGroupFromContext(uri: vscode.Uri) {
 		const componentFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.${config.componentFile.extension}`);
 		createFile(componentFile, getComponentFileTemplate(name));
 
-		if (config.componentGeneration.includeTestFile) {
-			const testFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.${config.testFile.suffix}.${config.testFile.extension}`);
-			createFile(testFile, getTestingLibraryTemplate(name));
-		}
-		
 		if (config.componentGeneration.includeCssModule) {
 			const moduleFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.module.css`);
 			createFile(moduleFile, getCssModuleFileTemplate());
+		}
+
+		if (config.componentGeneration.includeTestFile) {
+			const testFile: vscode.Uri = vscode.Uri.file(`${directory.fsPath}/${name}.${config.testFile.suffix}.${config.testFile.extension}`);
+			createFile(testFile, getTestingLibraryTemplate(name));
 		}
 	}
 }
@@ -81,7 +81,7 @@ export async function createComponentGroupFromContext(uri: vscode.Uri) {
  * 
  * @param uri {@link vscode.Uri} the uri for the relevant resource
  */
-async function createTestFile(uri: vscode.Uri) {
+export async function createTestFile(uri: vscode.Uri) {
 	const filePath: ParsedPath = path.posix.parse(uri.path);
 	const { dir, name, ext } = filePath;
 
@@ -90,7 +90,7 @@ async function createTestFile(uri: vscode.Uri) {
 		return;
 	}
 
-	const config: Config = getConfig();
+	const config: Config = getConfigWithDefaults();
 	const spec: vscode.Uri = vscode.Uri.file(`${dir}/${name}.${config.testFile.suffix}.${config.testFile.extension}`);
 	
     const openEditor = vscode.window.visibleTextEditors
@@ -124,7 +124,7 @@ async function createTestFile(uri: vscode.Uri) {
  * 
  * @param uri {@link vscode.Uri} the uri for the relevant resource
  */
-async function createComponentDirectory(uri: vscode.Uri) {
+export async function createComponentDirectory(uri: vscode.Uri) {
 	const { mkdir } = fs.promises;
 	try {
 		await mkdir(uri.path);
@@ -139,10 +139,9 @@ async function createComponentDirectory(uri: vscode.Uri) {
  * @param uri {@link vscode.Uri} the uri for the relevant resource
  * @param template {@link string} the template for the component
  */
-async function createFile(uri: vscode.Uri, template: string) {
+export async function createFile(uri: vscode.Uri, template: string) {	
 	if (fs.existsSync(uri.fsPath)){
-		const { name, ext } = path.posix.parse(uri.path);
-		vscode.window.showWarningMessage(`Warning: ${name}${ext} already exists. Will not recreate`);
+		warnFileExists(uri);
 		return;
 	}
 	
@@ -152,6 +151,27 @@ async function createFile(uri: vscode.Uri, template: string) {
 	wsedit.set(uri, [vscode.TextEdit.insert(new vscode.Position(0, 0),template)]);
 	
 	await vscode.workspace.applyEdit(wsedit);
-	vscode.workspace.openTextDocument(uri)
-		.then(doc => vscode.window.showTextDocument(doc));
+
+	await showDocumentInEditor(uri);
+}
+
+
+/**
+ * Shows a text document in an editor
+ * 
+ * @param uri {@link vscode.Uri} the uri of the file
+ */
+export async function showDocumentInEditor(uri: vscode.Uri) {
+	const doc: vscode.TextDocument = await vscode.workspace.openTextDocument(uri);
+	await vscode.window.showTextDocument(doc);
+}
+
+/**
+ * Warns that a file exists 
+ * 
+ * @param uri {@link vscode.Uri} the uri of the file
+ */
+export function warnFileExists(uri: vscode.Uri) {
+	const { name, ext } = path.posix.parse(uri.path);
+	vscode.window.showWarningMessage(`Warning: ${name}${ext} already exists. Will not recreate`);
 }

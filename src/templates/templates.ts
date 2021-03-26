@@ -1,5 +1,5 @@
 import { Config } from "../types/config";
-import { getConfig } from "../utils";
+import { getConfigWithDefaults } from "../utils";
 
 /**
  * Returns a simple react component template
@@ -12,7 +12,7 @@ export function getComponentFileTemplate(component?: string): string {
     component = 'Component';
   }
   
-  const config: Config = getConfig();
+  const config: Config = getConfigWithDefaults();
   const returnValue = config.componentFile.extension.match(/ts[x]?$/) ? ': JSX.Element': '';
 
   return `import React from "react";
