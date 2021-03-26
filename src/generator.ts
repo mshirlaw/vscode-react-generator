@@ -93,19 +93,43 @@ export async function createTestFile(uri: vscode.Uri) {
 	const config: Config = getConfigWithDefaults();
 	const spec: vscode.Uri = vscode.Uri.file(`${dir}/${name}.${config.testFile.suffix}.${config.testFile.extension}`);
 	
-    const openEditor = vscode.window.visibleTextEditors
+	const sourceCode = await extractSourceCode(uri);
+	const component = extractComponentNameFromSource(sourceCode);
+
+	createFile(spec, getTestingLibraryTemplate(component));
+}
+
+/**
+ * Extract spource code from open editor
+ * 
+ * @param uri {@link vscode.Uri} the uri for the open editor
+ * @returns 
+ */
+export async function extractSourceCode(uri: vscode.Uri) {
+	const openEditor = vscode.window.visibleTextEditors
 		.filter(editor => editor?.document?.uri === uri)[0];
-	
+
 	let sourceCode;
-	
+
 	if (openEditor) {
 		sourceCode = openEditor.document.getText();
 	} else {
 		const doc: vscode.TextDocument = await vscode.workspace.openTextDocument(uri);
-		sourceCode = doc.getText();	
+		sourceCode = doc.getText();
 	}
 
+	return sourceCode;
+}
+
+/**
+ * Extract component name from source code
+ * 
+ * @param sourceCode {@link string}
+ * @returns 
+ */
+export function extractComponentNameFromSource(sourceCode: string) {
 	let component;
+	
 	const sourceCodeLines = sourceCode.split('\n');
 	const regex = /^export\sdefault\s(\w+\s)?(?<component>\w+)/;
 
@@ -116,7 +140,7 @@ export async function createTestFile(uri: vscode.Uri) {
 		}
 	}
 
-	createFile(spec, getTestingLibraryTemplate(component));
+	return component;
 }
 
 /**
@@ -139,8 +163,8 @@ export async function createComponentDirectory(uri: vscode.Uri) {
  * @param uri {@link vscode.Uri} the uri for the relevant resource
  * @param template {@link string} the template for the component
  */
-export async function createFile(uri: vscode.Uri, template: string) {	
-	if (fs.existsSync(uri.fsPath)){
+export async function createFile(uri: vscode.Uri, template: string) {		
+	if (fs.existsSync(uri.fsPath)){		
 		warnFileExists(uri);
 		return;
 	}
