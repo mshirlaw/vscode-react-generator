@@ -1,15 +1,68 @@
+import * as sinon from 'sinon';
 import * as assert from 'assert';
+import { window, workspace } from 'vscode';
+import { afterEach } from 'mocha';
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-import * as vscode from 'vscode';
-// import * as myExtension from '../../extension';
+import { Config } from '../../types/config';
+import { getConfigWithDefaults } from '../../utils';
 
-suite('Extension Test Suite', () => {
-	vscode.window.showInformationMessage('Start all tests.');
+suite('Utils Test Suite', () => {
+	window.showInformationMessage('Start utils tests');
 
-	test('Sample test', () => {
-		assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-		assert.strictEqual(-1, [1, 2, 3].indexOf(0));
+	afterEach(() => {
+		sinon.restore();
+	});
+
+	test('should return default config', async () => {
+		const config = sinon.fake.returns({});
+		sinon.replace(workspace, "getConfiguration", config);
+		const expectedConfig: Config = {
+			testFile: { extension: 'js', suffix: 'spec' }, 
+			componentFile: { extension: 'js' },
+			componentGeneration: { includeCssModule: true, includeTestFile: true },
+		};
+		assert.deepStrictEqual(getConfigWithDefaults(), expectedConfig);
+	});
+
+	test('should return correct config when testFile is set', async () => {
+		const config = sinon.fake.returns({
+			testFile: { extension: 'ts', suffix: 'test' }
+		});
+		sinon.replace(workspace, "getConfiguration", config);
+		const expectedConfig: Config = {
+			testFile: { extension: 'ts', suffix: 'test' }, 
+			componentFile: { extension: 'js' },
+			componentGeneration: { includeCssModule: true, includeTestFile: true },
+		};
+		assert.deepStrictEqual(getConfigWithDefaults(), expectedConfig);
+	});
+
+	test('should return correct config when componentFile is set', async () => {
+		const config = sinon.fake.returns({
+			testFile: { extension: 'ts', suffix: 'test' },
+			componentFile: { extension: 'tsx'}
+		});
+		sinon.replace(workspace, "getConfiguration", config);
+		const expectedConfig: Config = {
+			testFile: { extension: 'ts', suffix: 'test' }, 
+			componentFile: { extension: 'tsx' },
+			componentGeneration: { includeCssModule: true, includeTestFile: true },
+		};
+		assert.deepStrictEqual(getConfigWithDefaults(), expectedConfig);
+	});
+
+	test('should return correct config when componentGeneration is set', async () => {
+		const config = sinon.fake.returns({
+			testFile: { extension: 'ts', suffix: 'test' },
+			componentFile: { extension: 'tsx'},
+			componentGeneration: { includeCssModule: false, includeTestFile: false },
+		});
+		sinon.replace(workspace, "getConfiguration", config);
+		const expectedConfig: Config = {
+			testFile: { extension: 'ts', suffix: 'test' }, 
+			componentFile: { extension: 'tsx' },
+			componentGeneration: { includeCssModule: false, includeTestFile: false },
+		};
+		assert.deepStrictEqual(getConfigWithDefaults(), expectedConfig);
 	});
 });
