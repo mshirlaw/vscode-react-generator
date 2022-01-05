@@ -19,7 +19,7 @@ import {
  * 
  * @param uri {@link vscode.Uri} the uri for the resource which was clicked
  */
-export async function createTestFileFromContext(uri: vscode.Uri) {
+export async function createTestFileFromContext(uri: vscode.Uri): Promise<void> {
 	if (!uri) {
 		return;
 	}
@@ -30,7 +30,7 @@ export async function createTestFileFromContext(uri: vscode.Uri) {
  * Responds to an event triggered from the command palette 
  * and creates a test file for the focused .{js|ts|jsx|tsx} file
  */
-export async function createTestFileFromCommandPalette() {
+export async function createTestFileFromCommandPalette(): Promise<void> {
 	const uri = vscode.window.activeTextEditor?.document.uri;
 	if (!uri) {
 		return;
@@ -44,7 +44,7 @@ export async function createTestFileFromCommandPalette() {
  * 
  * @param uri {@link vscode.Uri} the uri for the resource which was clicked
  */
-export async function createComponentGroupFromContext(uri: vscode.Uri) {
+export async function createComponentGroupFromContext(uri: vscode.Uri): Promise<void> {
 	if (!uri) {
 		return;
 	}
@@ -81,7 +81,7 @@ export async function createComponentGroupFromContext(uri: vscode.Uri) {
  * 
  * @param uri {@link vscode.Uri} the uri for the relevant resource
  */
-export async function createTestFile(uri: vscode.Uri) {
+export async function createTestFile(uri: vscode.Uri): Promise<void> {
 	const filePath: ParsedPath = path.posix.parse(uri.path);
 	const { dir, name, ext } = filePath;
 
@@ -105,7 +105,7 @@ export async function createTestFile(uri: vscode.Uri) {
  * @param uri {@link vscode.Uri} the uri for the open editor
  * @returns 
  */
-export async function extractSourceCode(uri: vscode.Uri) {
+export async function extractSourceCode(uri: vscode.Uri): Promise<string> {
 	const openEditor = vscode.window.visibleTextEditors
 		.filter(editor => editor?.document?.uri === uri)[0];
 
@@ -127,7 +127,7 @@ export async function extractSourceCode(uri: vscode.Uri) {
  * @param sourceCode {@link string}
  * @returns 
  */
-export function extractComponentNameFromSource(sourceCode: string) {
+export function extractComponentNameFromSource(sourceCode: string): string | undefined {
 	let component;
 	
 	const sourceCodeLines = sourceCode.split('\n');
@@ -148,7 +148,7 @@ export function extractComponentNameFromSource(sourceCode: string) {
  * 
  * @param uri {@link vscode.Uri} the uri for the relevant resource
  */
-export async function createComponentDirectory(uri: vscode.Uri) {
+export async function createComponentDirectory(uri: vscode.Uri): Promise<void> {
 	const { mkdir } = fs.promises;
 	try {
 		await mkdir(uri.path);
@@ -163,7 +163,7 @@ export async function createComponentDirectory(uri: vscode.Uri) {
  * @param uri {@link vscode.Uri} the uri for the relevant resource
  * @param template {@link string} the template for the component
  */
-export async function createFile(uri: vscode.Uri, template: string) {		
+export async function createFile(uri: vscode.Uri, template: string): Promise<void> {		
 	if (fs.existsSync(uri.fsPath)){		
 		warnFileExists(uri);
 		return;
@@ -185,7 +185,7 @@ export async function createFile(uri: vscode.Uri, template: string) {
  * 
  * @param uri {@link vscode.Uri} the uri of the file
  */
-export async function showDocumentInEditor(uri: vscode.Uri) {
+export async function showDocumentInEditor(uri: vscode.Uri): Promise<void> {
 	const doc: vscode.TextDocument = await vscode.workspace.openTextDocument(uri);
 	await vscode.window.showTextDocument(doc);
 }
@@ -195,7 +195,7 @@ export async function showDocumentInEditor(uri: vscode.Uri) {
  * 
  * @param uri {@link vscode.Uri} the uri of the file
  */
-export function warnFileExists(uri: vscode.Uri) {
+export function warnFileExists(uri: vscode.Uri): void {
 	const { name, ext } = path.posix.parse(uri.path);
 	vscode.window.showWarningMessage(`Warning: ${name}${ext} already exists. Will not recreate`);
 }
